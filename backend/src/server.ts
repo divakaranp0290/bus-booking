@@ -1,23 +1,22 @@
+// backend/src/server.ts (partial snippet)
 import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import aggregatorRoutes from './routes/aggregator.routes';
-import bookingRoutes from './routes/booking.routes';
-import { startBlockReleaser } from './utils/blockReleaser';
-
-dotenv.config();
+import http from 'http';
+import { initSocketServer } from './sockets';
+import bookingRouter from './routes/booking';
+// ... your existing imports & app setup
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+// ... bodyParser, routes, middleware, etc.
 
-app.use('/api/aggregator', aggregatorRoutes);
-app.use('/api/booking', bookingRoutes);
+// Create HTTP server & init Socket.IO
+const httpServer = http.createServer(app);
+const io = initSocketServer(httpServer);
 
-app.get('/', (_, res) => res.send('BIT1 backend running (Postgres)'));
-
+// optionally make io available via app (controllers can use req.app.get('io') or getIO())
+app.set('io', io);
+app.use('/api/booking', bookingRouter);
+// start
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Backend listening on ${PORT}`);
-  startBlockReleaser(); // start TTL releaser
 });

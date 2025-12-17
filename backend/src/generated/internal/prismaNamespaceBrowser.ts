@@ -52,9 +52,11 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Bus: 'Bus',
-  Seat: 'Seat',
-  Booking: 'Booking'
+  Otp: 'Otp',
+  Booking: 'Booking',
+  BookingSeat: 'BookingSeat',
+  SeatLock: 'SeatLock',
+  Payment: 'Payment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -75,55 +77,83 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  phone: 'phone',
+  email: 'email',
+  password: 'password',
   name: 'name',
-  createdAt: 'createdAt'
+  phone: 'phone',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const BusScalarFieldEnum = {
+export const OtpScalarFieldEnum = {
   id: 'id',
-  externalId: 'externalId',
-  operator: 'operator',
-  fromCity: 'fromCity',
-  toCity: 'toCity',
-  depTime: 'depTime',
-  arrTime: 'arrTime',
-  durationMin: 'durationMin',
-  baseFare: 'baseFare'
+  email: 'email',
+  code: 'code',
+  expiresAt: 'expiresAt',
+  used: 'used',
+  createdAt: 'createdAt'
 } as const
 
-export type BusScalarFieldEnum = (typeof BusScalarFieldEnum)[keyof typeof BusScalarFieldEnum]
-
-
-export const SeatScalarFieldEnum = {
-  id: 'id',
-  seatCode: 'seatCode',
-  row: 'row',
-  col: 'col',
-  price: 'price',
-  available: 'available',
-  busId: 'busId'
-} as const
-
-export type SeatScalarFieldEnum = (typeof SeatScalarFieldEnum)[keyof typeof SeatScalarFieldEnum]
+export type OtpScalarFieldEnum = (typeof OtpScalarFieldEnum)[keyof typeof OtpScalarFieldEnum]
 
 
 export const BookingScalarFieldEnum = {
   id: 'id',
   pnr: 'pnr',
-  busId: 'busId',
   userId: 'userId',
-  seats: 'seats',
-  totalAmount: 'totalAmount',
+  busId: 'busId',
+  providerId: 'providerId',
+  amount: 'amount',
   status: 'status',
+  lockRef: 'lockRef',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const BookingSeatScalarFieldEnum = {
+  id: 'id',
+  seatNo: 'seatNo',
+  fare: 'fare',
+  bookingId: 'bookingId',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingSeatScalarFieldEnum = (typeof BookingSeatScalarFieldEnum)[keyof typeof BookingSeatScalarFieldEnum]
+
+
+export const SeatLockScalarFieldEnum = {
+  id: 'id',
+  busId: 'busId',
+  seatNo: 'seatNo',
+  lockRef: 'lockRef',
+  token: 'token',
+  expiresAt: 'expiresAt',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type SeatLockScalarFieldEnum = (typeof SeatLockScalarFieldEnum)[keyof typeof SeatLockScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  razorpayOrderId: 'razorpayOrderId',
+  razorpayPaymentId: 'razorpayPaymentId',
+  razorpaySignature: 'razorpaySignature',
+  amount: 'amount',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -1,0 +1,71 @@
+<header class="app-header">
+  <div class="container-xl header-inner">
+
+    <!-- LEFT -->
+    <div class="left">
+      <div class="logo">
+        <span class="logo-text">Viaa</span>
+      </div>
+
+      <nav class="nav-tabs">
+        <button
+          class="tab"
+          [class.active]="activeTab === 'bus'"
+          (click)="selectTab('bus')">
+          <span class="icon bus-icon"></span>
+          <span>Buses</span>
+        </button>
+
+        <button
+          class="tab"
+          [class.active]="activeTab === 'flight'"
+          (click)="selectTab('flight')">
+          <span class="icon flight-icon"></span>
+          Flight
+        </button>
+
+        <span class="tab-indicator" [style.transform]="indicatorTransform"></span>
+      </nav>
+    </div>
+
+  
+
+      <!-- RIGHT (DESKTOP ONLY) -->
+      <div class="d-none d-md-flex gap-4">
+        <div class="menu-item">
+          <span class="icon booking-icon"></span>
+          <span>Bookings</span>
+        </div>
+        <div class="menu-item">
+          <span class="icon help-icon"></span>
+          <span>Help</span>
+        </div>
+        <div class="menu-item account">
+          <span class="icon account-icon"></span>
+          <span>Account</span></div>
+      </div>
+      
+      <!-- MOBILE MENU ICON -->
+      <div class="d-md-none mobile-menu" (click)="toggleMobileMenu()">☰</div>
+      </div>
+  
+
+  <!-- MOBILE DRAWER -->
+  <div class="mobile-drawer" *ngIf="mobileMenuOpen">
+    <div class="container">
+      <div class="drawer-item" (click)="closeMobileMenu()">
+        <span class="icon booking-icon"></span>
+          <span>Bookings</span>
+        </div>
+      <div class="drawer-item" (click)="closeMobileMenu()">
+        <span class="icon help-icon"></span>
+          <span>Help</span>
+        </div>
+      <div class="drawer-item account" (click)="closeMobileMenu()">
+        <span class="icon account-icon"></span>
+          <span>Account</span>
+        </div>
+    </div>
+  </div>
+
+</header>

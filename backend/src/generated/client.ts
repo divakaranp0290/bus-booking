@@ -43,17 +43,27 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model Bus
+ * Model Otp
  * 
  */
-export type Bus = Prisma.BusModel
-/**
- * Model Seat
- * 
- */
-export type Seat = Prisma.SeatModel
+export type Otp = Prisma.OtpModel
 /**
  * Model Booking
  * 
  */
 export type Booking = Prisma.BookingModel
+/**
+ * Model BookingSeat
+ * 
+ */
+export type BookingSeat = Prisma.BookingSeatModel
+/**
+ * Model SeatLock
+ * 
+ */
+export type SeatLock = Prisma.SeatLockModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel

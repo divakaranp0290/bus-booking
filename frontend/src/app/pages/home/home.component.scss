@@ -1,0 +1,472 @@
+/* Page background */
+.home-hero {
+  background: #ffffff;
+  padding: 40px 0 56px;
+  height: 250px;
+}
+
+.hero {
+  position: relative;
+  background:
+    linear-gradient(180deg, #ff7a18 10%, #ffb347 50%);
+  padding: 120px 0 180px;
+  overflow: hidden;
+}
+
+.bus {
+  position: absolute;
+  bottom: 50px;
+  right: -300px;      /* start off-screen on RIGHT */
+  width: 130px;
+  pointer-events: none;
+  transform: rotateY(180deg);
+  will-change: transform;
+}
+
+
+
+.flight-wrap {
+  position: absolute;
+  left: -180px;     /* start off-screen */
+  bottom: 150px;    /* near bus/ground */
+  pointer-events: none;
+}
+
+.flight {
+  width: 170px;
+  transform-origin: center center;
+}
+
+.flight {
+  animation: flightTakeoff 10s linear infinite;
+}
+
+@keyframes flightTakeoff {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(0.85);
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  30% {
+    transform: translate(45vw, 0) rotate(0deg) scale(0.9);
+  }
+
+  45% {
+    transform: translate(65vw, -10px) rotate(-10deg) scale(0.95);
+  }
+
+  70% {
+    transform: translate(90vw, -140px) rotate(-18deg) scale(1);
+  }
+  85% {
+    transform: translate(105vw, -220px) rotate(-20deg) scale(1.02);
+  }
+  100% {
+    transform: translate(120vw, -260px) rotate(-22deg) scale(1.05);
+    opacity: 0;
+  }
+}
+
+
+
+.motion-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.line {
+  position: absolute;
+  height: 2px;
+  width: 220px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(11, 9, 7, 0.35),
+    transparent
+  );
+  animation: travelLine 18s linear infinite;
+}
+
+.l1 { top: 38%; animation-duration: 22s; }
+.l2 { top: 45%; animation-duration: 28s; }
+.l3 { top: 52%; animation-duration: 34s; }
+
+@keyframes travelLine {
+  from { left: -30%; }
+  to { left: 130%; }
+}
+
+.transport-silhouette {
+  position: absolute;
+  opacity: 0.03;
+  fill: none;
+  stroke: #ff8c00;
+  stroke-width: 1.2;
+}
+
+.floating-card {
+  position: relative;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.38);
+  animation: floatIdle 3s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes floatIdle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.floating-card:hover {
+  box-shadow:
+    0 28px 60px rgba(0, 0, 0, 0.12);
+  transform: translateY(-8px);
+}
+
+.hero {
+  padding-top: 96px;
+}
+
+.hero-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  position: relative;
+  bottom: 75px;
+  text-align: center;
+  color: white;
+}
+
+
+
+
+// .hero-bg {
+//   position: absolute;
+//   inset: 0;
+//   overflow: hidden;
+//   pointer-events: none;
+//   z-index: 0;
+// }
+
+// .bg-bus,
+// .bg-flight {
+//   position: absolute;
+//   opacity: 0.05;
+//   color: var(--primary); // your orange
+// }
+
+// /* BUS */
+// .bg-bus {
+//   bottom: 20%;
+//   left: -100px;
+//   animation: moveBus 30s linear infinite;
+// }
+
+// /* FLIGHT */
+// .bg-flight {
+//   top: 15%;
+//   right: -80px;
+//   animation: moveFlight 40s linear infinite;
+// }
+
+// @keyframes moveBus {
+//   from { transform: translateX(-150px); }
+//   to { transform: translateX(120vw); }
+// }
+
+// @keyframes moveFlight {
+//   from { transform: translateX(120vw) translateY(0); }
+//   to { transform: translateX(-200px) translateY(40px); }
+// }
+
+
+/* CARD */
+.search-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 20px 35px 20px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06);
+  position: relative;
+  bottom: 60px;
+}
+
+/* GRID */
+.search-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.search-action {
+  display: flex;
+  justify-content: center;   /* 🔥 center button */
+  margin-top: 20px;
+}
+
+.search-action-top {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px; /* space before card */
+}
+
+/* FIELD */
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.field input {
+  height: 44px;
+  padding: 0 12px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+}
+
+.field input:focus {
+  border-color: #ff7a18;
+}
+
+/* CTA */
+.field.action {
+  display: flex;
+  justify-content: center; /* CENTER horizontally */
+  align-items: center;
+}
+
+.search-btn {
+  width: 100%;
+  max-width: 240px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #ff7a18, #ffb347);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.search-btn.primary {
+  height: 52px;
+  min-width: 240px;
+  padding: 0 36px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff7a18, #ffb347);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(255, 122, 24, 0.25);
+}
+
+
+.search-btn.floating {
+  position: absolute;
+  left: 50%;
+  // bottom: 34px;          /* ⬅️ overlaps the card */
+  transform: translateX(-50%);
+  height: 52px;
+  min-width: 220px;
+  padding: 0 32px;
+  border-radius: 999px;   /* pill shape */
+  background: linear-gradient(90deg, #ff7a18, #ffb347);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(255, 122, 24, 0.25);
+}
+
+.search-card-wrapper {
+  position: relative;
+}
+
+.date-input-wrapper {
+  position: relative;
+}
+
+.date-input-wrapper input {
+  width: 100%;
+  padding-right: 150px; // space for Today/Tomorrow
+}
+
+.inline-pills {
+  position: absolute;
+  right: 10px;
+  top: 40%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.pill {
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  background: #f1f3f5;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.pill:hover {
+  background: #ffe4c2;
+}
+
+.pill.active {
+  background: linear-gradient(135deg, #ff9f1a, #ff7a18);
+  color: #fff;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .hero-title {
+    font-size: 22px;
+    margin-bottom: 16px;
+    position: relative;
+    bottom: 75px;
+    text-align: center;
+    color: white;
+  }
+}
+@media (min-width: 768px) {
+   .search-grid {
+    grid-template-columns: 1.2fr 1.2fr 1fr;
+    align-items: end;
+  }
+
+ 
+
+  .search-btn {
+    width: 180px;
+  }
+}
+
+// Date Picker Styling
+.date-input-wrapper {
+  position: relative;
+}
+
+.date-input {
+  width: 100%;
+  padding: 14px 160px 14px 44px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.quick-actions {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.quick-actions button {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-actions button.active {
+  background: linear-gradient(135deg, #ff8a00, #ffc046);
+  color: white;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    height: 48px;
+    padding-left: 48px;
+    border-radius: 12px;
+    border: 1px solid #e3e6eb;
+    font-size: 16px;
+  }
+}
+
+.start-icon {
+  position: absolute;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 20px;
+    height: 20px;
+    bottom: 6px;
+    position: relative;
+  }
+}
+
+.input-wrapper:focus-within .start-icon {
+  transform: scale(1.1);
+  transition: 0.2s ease;
+}
+
+
+@media (max-width: 768px) {
+  .flight {
+    animation-duration: 14s;
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flight {
+    animation: none;
+    opacity: 0.3;
+  }
+}
+
+@media (max-width: 768px) {
+  .bus {
+    width: 130px;
+    opacity: 0.7;
+  }
+}
+
+

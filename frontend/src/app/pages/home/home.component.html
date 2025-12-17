@@ -1,0 +1,78 @@
+<app-header></app-header>
+
+<div class="hero">
+    <h1 class="hero-title d-md-block">
+        Bus Ticket Booking
+    </h1>
+    <img src="assets/illustrations/premium_bus.svg" class="bus road-line" alt="Bus illustration" />
+    <div class="flight-wrap">
+        <img src="assets/illustrations/premium_air.svg" class="flight" alt="Flight illustration" />
+    </div>
+    
+    <div class="motion-layer">
+
+        <span class="line l1"></span>
+        <span class="line l2"></span>
+        <span class="line l3"></span>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="search-card-wrapper">
+
+        <div class="search-card floating-card">
+            <div class="search-grid">
+                <div class="field">
+                    <label>From</label>
+                    <div class="input-wrapper">
+                        <span class="start-icon">
+                            <img src="assets/icons/start_icon.svg" alt="from" />
+                        </span>
+
+                        <input type="text" [(ngModel)]="from" placeholder="Enter Source" />
+                    </div>
+
+                </div>
+
+                <div class="field">
+                    <label>To</label>
+                    <div class="input-wrapper">
+                        <span class="start-icon">
+                            <img src="assets/icons/end_icon.svg" alt="to" />
+                        </span>
+
+                        <input type="text" [(ngModel)]="to" placeholder="Enter Destination" />
+                    </div>
+                </div>
+
+
+                <div class="date-field field">
+                    <label>Date</label>
+
+                    <div class="date-input-wrapper">
+                        <input #dateInput type="text" class="date-input" readonly />
+
+                        <div class="inline-pills">
+                            <span class="pill" [class.active]="selectedDate === 'today'" (click)="selectToday()">
+                                Today
+                            </span>
+
+                            <span class="pill" [class.active]="selectedDate === 'tomorrow'" (click)="selectTomorrow()">
+                                Tomorrow
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- FLOATING CTA -->
+            <button class="search-btn floating" (click)="search()">
+                Search Buses
+            </button>
+        </div>
+
+
+
+    </div>
+
+</div>

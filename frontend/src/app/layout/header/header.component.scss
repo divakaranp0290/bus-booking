@@ -1,0 +1,229 @@
+.app-header {
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 10px 5px 10px rgba(0, 0, 0, 0.06);
+}
+
+.header-inner {
+  padding-bottom: 4px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* LEFT */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* LOGO */
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  background: linear-gradient(90deg, #ff7a18 0%, #ffb347 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
+  padding: 0px 0px 4px 0px;
+}
+
+
+/* TABS */
+.nav-tabs {
+  position: relative;
+  display: flex;
+  gap: 24px;
+}
+
+.tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 6px 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.search-card-wrapper {
+  position: relative;
+}
+
+.tab.active {
+  color: #111827;
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  bottom: -12px;
+  width: 55%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff7a18, #ffb347);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* SHOW highlight only when selected */
+.tab.active::after {
+  transform: scaleX(1);
+}
+
+/* ANIMATED INDICATOR */
+.tab-indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 28px;
+  height: 3px;
+  // background: var(--brand-primary);
+  border-radius: 6px;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ICONS */
+.icon {
+ 
+  background-size: contain;
+  background-repeat: no-repeat;
+   width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* SVG ICONS */
+.bus-icon {
+  background-image: url('/assets/icons/bus_anime.svg');
+}
+
+.flight-icon {
+  background-image: url('/assets/icons/air_anime.svg');
+}
+
+.booking-icon {
+  background-image: url('/assets/icons/booking_icon.svg');
+}
+.help-icon {
+  background-image: url('/assets/icons/help_icon.svg');
+}
+.account-icon {
+  background-image: url('/assets/icons/account_icon.svg');
+}
+
+/* RIGHT MENU */
+.right {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+}
+
+.menu-item {
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .header-inner {
+    justify-content: space-between;
+  }
+}
+
+.tab.active .bus-icon {
+  animation: drive 1.0s ease-out;
+}
+
+.tab.active .flight-icon {
+  animation: fly 1.0s ease-out;
+}
+
+@keyframes drive {
+  from { transform: translateX(-6px); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fly {
+  from { transform: translateY(6px); opacity: 0.6; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.nav-tabs,
+.nav {
+  border-bottom: none !important;
+}
+
+.nav-tabs::after,
+.nav::after {
+  display: none !important;
+  content: none !important;
+}
+/* =========================
+   RIGHT MENU
+========================= */
+.menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #1f2937;
+}
+
+.menu-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.account {
+  font-weight: 600;
+}
+
+/* =========================
+   MOBILE MENU
+========================= */
+.mobile-menu {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* MOBILE DRAWER */
+.mobile-drawer {
+  background: #ffffff;
+}
+
+.drawer-item {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.drawer-item:last-child {
+  border-bottom: none;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #111827;
+}

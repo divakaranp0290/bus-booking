@@ -9,7 +9,9 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
-export type * from './models/Bus'
-export type * from './models/Seat'
+export type * from './models/Otp'
 export type * from './models/Booking'
+export type * from './models/BookingSeat'
+export type * from './models/SeatLock'
+export type * from './models/Payment'
 export type * from './commonInputTypes'

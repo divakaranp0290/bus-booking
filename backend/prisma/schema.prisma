@@ -7,62 +7,110 @@ datasource db {
   provider = "postgresql"
 }
 
+
 // -------------------------------
-// MODELS
+// CORE MODELS
 // -------------------------------
 
 model User {
-  id        Int      @id @default(autoincrement())
-  phone     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
   name      String?
+  phone     String?
+  role      UserRole  @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+}
+
+model Otp {
+  id        Int      @id @default(autoincrement())
+  email     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  bookings Booking[]
 }
 
-model Bus {
-  id          Int      @id @default(autoincrement())
-  externalId  String   @unique
-  operator    String
-  fromCity    String
-  toCity      String
-  depTime     DateTime
-  arrTime     DateTime
-  durationMin Int
-  baseFare    Int
-
-  seats    Seat[]
-  bookings Booking[]
-}
-
-model Seat {
-  id        Int     @id @default(autoincrement())
-  seatCode  String
-  row       Int
-  col       Int
-  price     Int
-  available Boolean @default(true)
-
-  busId Int
-  bus   Bus @relation(fields: [busId], references: [id])
-
-  @@unique([busId, seatCode])
-}
+// -------------------------------
+// BOOKING / LOCK / PAYMENT MODELS
+// -------------------------------
 
 model Booking {
-  id          Int      @id @default(autoincrement())
-  pnr         String   @unique
-  busId       Int
-  userId      Int?
-  seats       String
-  totalAmount Int
-  status      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         Int           @id @default(autoincrement())
+  pnr        String?       @unique
+  userId     Int
+  busId      String
+  providerId Int?
+  amount     Int           @default(0)
+  status     BookingStatus @default(INITIATED)
+  lockRef    String?       @unique
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
-  user User? @relation(fields: [userId], references: [id])
-  bus  Bus   @relation(fields: [busId], references: [id])
+  seats      BookingSeat[]
+  payment    Payment?      // one-to-one: Booking has one Payment
+  user       User          @relation(fields: [userId], references: [id])
+}
 
-  @@index([busId])
-  @@index([status])
+model BookingSeat {
+  id        Int      @id @default(autoincrement())
+  seatNo    String
+  fare      Int
+  bookingId Int
+  createdAt DateTime @default(now())
+
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+}
+
+model SeatLock {
+  id        Int      @id @default(autoincrement())
+  busId     String
+  seatNo    String
+  lockRef   String
+  token     String?      // store redis token to release safely
+  expiresAt DateTime
+  userId    Int
+  createdAt DateTime @default(now())
+
+  @@unique([busId, seatNo])
+}
+
+model Payment {
+  id                 Int           @id @default(autoincrement())
+  bookingId          Int           @unique   // <--- make unique for one-to-one
+  razorpayOrderId    String?
+  razorpayPaymentId  String?
+  razorpaySignature  String?
+  amount             Int
+  status             PaymentStatus  @default(CREATED)
+  createdAt          DateTime       @default(now())
+
+  booking            Booking        @relation(fields: [bookingId], references: [id])
+}
+
+// -------------------------------
+// ENUMS
+// -------------------------------
+
+enum UserRole {
+  USER
+  ADMIN
+  PROVIDER
+}
+
+enum BookingStatus {
+  INITIATED
+  LOCKED
+  PAYMENT_PENDING
+  PAYMENT_SUCCESS
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  CREATED
+  SUCCESS
+  FAILED
 }

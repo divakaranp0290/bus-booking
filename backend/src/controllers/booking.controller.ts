@@ -1,122 +1,166 @@
+// backend/src/controllers/booking.controller.ts
 import { Request, Response } from 'express';
-import { prisma } from "../utils/prisma";
 import crypto from 'crypto';
+import { prisma } from "../utils/prisma";
+import { acquireSeatLock, releaseSeatLock, seatKey } from '../utils/redis';
+import { getIO } from '../sockets';
 
 
-function generatePNR() {
-  return 'PNR' + crypto.randomBytes(3).toString('hex').toUpperCase();
+
+function nowPlusMinutes(mins: number) {
+  return new Date(Date.now() + mins * 60 * 1000);
 }
 
-export const blockSeats = async (req: Request, res: Response) => {
+/**
+ * POST /api/booking/lock
+ * body: { busId: string, seats: string[], ttlMinutes?: number }
+ */
+export async function lockSeats(req: Request, res: Response) {
   try {
-    const { busId, seatCodes, userPhone } = req.body;
-    if (!busId || !seatCodes || !Array.isArray(seatCodes) || seatCodes.length === 0) {
+    const userId = (req as any).user?.id ?? null; // adapt if you have auth middleware
+    const { busId, seats, ttlMinutes = 10 } = req.body;
+    if (!busId || !Array.isArray(seats) || seats.length === 0) {
       return res.status(400).json({ error: 'Invalid payload' });
     }
 
-    const bus = await prisma.bus.findUnique({ where: { externalId: busId }, include: { seats: true } });
-    if (!bus) return res.status(404).json({ error: 'Bus not found' });
-
-    const seatRecords = bus.seats.filter((s: any) => seatCodes.includes(s.seatCode));
-    const unavailable = seatRecords.filter((s : any) => !s.available);
-    if (unavailable.length) {
-      return res.status(409).json({ error: 'Some seats not available', unavailable: unavailable.map((s : any) => s.seatCode) });
+    // 1) DB-level check for active locks
+    const active = await prisma.seatLock.findMany({
+      where: { busId, seatNo: { in: seats }, expiresAt: { gt: new Date() } },
+    });
+    if (active.length) {
+      return res.status(409).json({ conflictSeats: active.map(a => a.seatNo) });
     }
 
-    const totalAmount = seatRecords.reduce((s: number, seat: typeof bus.seats[0]) => s + seat.price, 0);
-
-    let user = null;
-    if (userPhone) {
-      user = await prisma.user.upsert({
-        where: { phone: userPhone },
-        update: {},
-        create: { phone: userPhone }
-      });
-    }
-
-    const pnr = generatePNR();
-
-    const booking = await prisma.$transaction(async (tx: any) => {
-      await tx.seat.updateMany({
-        where: { busId: bus.id, seatCode: { in: seatCodes }, available: true },
-        data: { available: false }
-      });
-
-      const bk = await tx.booking.create({
-        data: {
-          pnr,
-          busId: bus.id,
-          userId: user?.id,
-          seats: JSON.stringify(seatCodes),
-          totalAmount,
-          status: 'CREATED'
+    // 2) Acquire Redis locks one-by-one (fail fast)
+    const acquired: { seat: string; key: string; token: string }[] = [];
+    for (const seat of seats) {
+      const a = await acquireSeatLock(busId, seat, ttlMinutes * 60 * 1000);
+      if (!a) {
+        // release previous acquired
+        for (const p of acquired) {
+          try { await releaseSeatLock(p.key, p.token); } catch (e) { /* ignore */ }
         }
-      });
-      return bk;
+        return res.status(409).json({ conflictSeats: [seat] });
+      }
+      acquired.push({ seat, key: a.key, token: a.token });
+    }
+
+    // 3) Create booking row + seatLock rows in DB (transaction)
+    const lockRef = crypto.randomUUID();
+    const expiresAt = nowPlusMinutes(ttlMinutes);
+
+    const booking = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.create({ data: { userId: userId ?? undefined, busId, lockRef, status: 'LOCKED', amount: 0 } });
+      for (const a of acquired) {
+        await tx.seatLock.create({
+          data: { lockRef, busId, seatNo: a.seat, token: a.token, expiresAt, userId: userId ?? undefined }
+        });
+      }
+      return b;
     });
 
-    res.json({ blockId: booking.id, pnr: booking.pnr, totalAmount: booking.totalAmount });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Block failed' });
-  }
-};
+    // 4) broadcast lock events via socket.io
+    try {
+      const io = getIO();
+      for (const a of acquired) {
+        io.to(`bus:${busId}`).emit('seat:update', { seatNo: a.seat, status: 'locked', busId });
+      }
+    } catch (e) {
+      // socket may not be initialized — non-fatal
+    }
 
-export const confirmBooking = async (req: Request, res: Response) => {
+    return res.json({ success: true, lockRef, bookingId: booking.id, expiresAt });
+  } catch (err) {
+    console.error('lockSeats error', err);
+    return res.status(500).json({ error: 'server' });
+  }
+}
+
+/**
+ * POST /api/booking/release
+ * body: { lockRef: string }
+ */
+export async function releaseLock(req: Request, res: Response) {
   try {
-    const { blockId } = req.body;
-    if (!blockId) return res.status(400).json({ error: 'Missing blockId' });
+    const { lockRef } = req.body;
+    if (!lockRef) return res.status(400).json({ error: 'Missing lockRef' });
 
-    const booking = await prisma.booking.findUnique({ where: { id: blockId } });
-    if (!booking) return res.status(404).json({ error: 'Block not found' });
-    if (booking.status !== 'CREATED') return res.status(400).json({ error: 'Booking not in CREATED state' });
+    const locks = await prisma.seatLock.findMany({ where: { lockRef } });
+    if (!locks.length) return res.json({ success: true, message: 'Nothing to release' });
 
-    const updated = await prisma.booking.update({
-      where: { id: blockId },
-      data: { status: 'CONFIRMED' }
-    });
+    // delete DB rows and try to release Redis tokens
+    for (const l of locks) {
+      try {
+        if (l.token) await releaseSeatLock(seatKey(l.busId, l.seatNo), l.token);
+      } catch (e) { /* ignore release errors */ }
+    }
+    await prisma.seatLock.deleteMany({ where: { lockRef } });
 
-    res.json({ bookingId: updated.id, pnr: updated.pnr, status: updated.status });
+    // broadcast available seats
+    try {
+      const io = getIO();
+      for (const l of locks) io.to(`bus:${l.busId}`).emit('seat:update', { seatNo: l.seatNo, status: 'available', busId: l.busId });
+    } catch (e) {}
+
+    return res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Confirm failed' });
+    console.error('releaseLock error', err);
+    return res.status(500).json({ error: 'server' });
   }
-};
+}
 
-export const cancelBooking = async (req: Request, res: Response) => {
+/**
+ * POST /api/booking/confirm
+ * body: { lockRef: string, payment?: {...} }
+ *
+ * NOTE: This endpoint assumes payment verification is done.
+ */
+export async function confirmBooking(req: Request, res: Response) {
   try {
-    const id = Number(req.params.id);
-    const booking = await prisma.booking.findUnique({ where: { id } });
-    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+    const { lockRef } = req.body;
+    if (!lockRef) return res.status(400).json({ error: 'Missing lockRef' });
 
-    if (booking.status === 'CANCELLED') return res.json({ status: 'ALREADY_CANCELLED' });
+    // load seat locks
+    const seatLocks = await prisma.seatLock.findMany({ where: { lockRef } });
+    if (!seatLocks.length) return res.status(404).json({ error: 'No locks found' });
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: { status: 'CANCELLED' }
+    // Validate not expired (server time)
+    const now = new Date();
+    const expired = seatLocks.filter(s => s.expiresAt <= now);
+    if (expired.length) return res.status(410).json({ error: 'Lock expired', seats: expired.map(e => e.seatNo) });
+
+    // Perform transaction: create BookingSeat rows, remove seatLock rows, update booking status + pnr
+    let pnr = `PNR${Math.floor(Math.random() * 1e9).toString().padStart(9, '0')}`;
+    await prisma.$transaction(async (tx) => {
+      const booking = await tx.booking.findUnique({ where: { lockRef }});
+      if (!booking) throw new Error('Booking missing in transaction');
+
+      // create seats
+      for (const s of seatLocks) {
+        await tx.bookingSeat.create({
+          data: { bookingId: booking.id, seatNo: s.seatNo, fare: Math.round((booking.amount || 0) / seatLocks.length) }
+        });
+      }
+      // delete seat locks
+      await tx.seatLock.deleteMany({ where: { lockRef } });
+      // update booking
+      await tx.booking.update({ where: { id: booking.id }, data: { status: 'CONFIRMED', pnr }});
     });
 
-    const seatCodes = JSON.parse(updated.seats) as string[];
-    await prisma.seat.updateMany({
-      where: { busId: updated.busId, seatCode: { in: seatCodes } },
-      data: { available: true }
-    });
+    // release redis keys (best-effort)
+    for (const s of seatLocks) {
+      try { if (s.token) await releaseSeatLock(seatKey(s.busId, s.seatNo), s.token); } catch (e) {}
+    }
 
-    res.json({ status: 'CANCELLED', bookingId: updated.id });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Cancel failed' });
-  }
-};
+    // broadcast seat booked events
+    try {
+      const io = getIO();
+      for (const s of seatLocks) io.to(`bus:${s.busId}`).emit('seat:update', { seatNo: s.seatNo, status: 'booked', busId: s.busId });
+    } catch (e) {}
 
-export const getBooking = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const booking = await prisma.booking.findUnique({ where: { id } });
-    if (!booking) return res.status(404).json({ error: 'Not found' });
-    res.json(booking);
+    return res.json({ success: true, pnr });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Get booking failed' });
+    console.error('confirmBooking error', err);
+    return res.status(500).json({ error: 'server' });
   }
-};
+}

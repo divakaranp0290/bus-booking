@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.1.0",
   "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated\" // ⬅️ will create src/generated/client.*\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\n// -------------------------------\n// MODELS\n// -------------------------------\n\nmodel User {\n  id        Int      @id @default(autoincrement())\n  phone     String   @unique\n  name      String?\n  createdAt DateTime @default(now())\n\n  bookings Booking[]\n}\n\nmodel Bus {\n  id          Int      @id @default(autoincrement())\n  externalId  String   @unique\n  operator    String\n  fromCity    String\n  toCity      String\n  depTime     DateTime\n  arrTime     DateTime\n  durationMin Int\n  baseFare    Int\n\n  seats    Seat[]\n  bookings Booking[]\n}\n\nmodel Seat {\n  id        Int     @id @default(autoincrement())\n  seatCode  String\n  row       Int\n  col       Int\n  price     Int\n  available Boolean @default(true)\n\n  busId Int\n  bus   Bus @relation(fields: [busId], references: [id])\n\n  @@unique([busId, seatCode])\n}\n\nmodel Booking {\n  id          Int      @id @default(autoincrement())\n  pnr         String   @unique\n  busId       Int\n  userId      Int?\n  seats       String\n  totalAmount Int\n  status      String\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  user User? @relation(fields: [userId], references: [id])\n  bus  Bus   @relation(fields: [busId], references: [id])\n\n  @@index([busId])\n  @@index([status])\n}\n",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated\" // ⬅️ will create src/generated/client.*\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\n// -------------------------------\n// CORE MODELS\n// -------------------------------\n\nmodel User {\n  id        Int       @id @default(autoincrement())\n  email     String    @unique\n  password  String\n  name      String?\n  phone     String?\n  role      UserRole  @default(USER)\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  bookings  Booking[]\n}\n\nmodel Otp {\n  id        Int      @id @default(autoincrement())\n  email     String\n  code      String\n  expiresAt DateTime\n  used      Boolean  @default(false)\n  createdAt DateTime @default(now())\n}\n\n// -------------------------------\n// BOOKING / LOCK / PAYMENT MODELS\n// -------------------------------\n\nmodel Booking {\n  id         Int           @id @default(autoincrement())\n  pnr        String?       @unique\n  userId     Int\n  busId      String\n  providerId Int?\n  amount     Int           @default(0)\n  status     BookingStatus @default(INITIATED)\n  lockRef    String?       @unique\n  createdAt  DateTime      @default(now())\n  updatedAt  DateTime      @updatedAt\n\n  seats   BookingSeat[]\n  payment Payment? // one-to-one: Booking has one Payment\n  user    User          @relation(fields: [userId], references: [id])\n}\n\nmodel BookingSeat {\n  id        Int      @id @default(autoincrement())\n  seatNo    String\n  fare      Int\n  bookingId Int\n  createdAt DateTime @default(now())\n\n  booking Booking @relation(fields: [bookingId], references: [id])\n}\n\nmodel SeatLock {\n  id        Int      @id @default(autoincrement())\n  busId     String\n  seatNo    String\n  lockRef   String\n  token     String? // store redis token to release safely\n  expiresAt DateTime\n  userId    Int\n  createdAt DateTime @default(now())\n\n  @@unique([busId, seatNo])\n}\n\nmodel Payment {\n  id                Int           @id @default(autoincrement())\n  bookingId         Int           @unique // <--- make unique for one-to-one\n  razorpayOrderId   String?\n  razorpayPaymentId String?\n  razorpaySignature String?\n  amount            Int\n  status            PaymentStatus @default(CREATED)\n  createdAt         DateTime      @default(now())\n\n  booking Booking @relation(fields: [bookingId], references: [id])\n}\n\n// -------------------------------\n// ENUMS\n// -------------------------------\n\nenum UserRole {\n  USER\n  ADMIN\n  PROVIDER\n}\n\nenum BookingStatus {\n  INITIATED\n  LOCKED\n  PAYMENT_PENDING\n  PAYMENT_SUCCESS\n  CONFIRMED\n  CANCELLED\n}\n\nenum PaymentStatus {\n  CREATED\n  SUCCESS\n  FAILED\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"bookings\",\"kind\":\"object\",\"type\":\"Booking\",\"relationName\":\"BookingToUser\"}],\"dbName\":null},\"Bus\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"externalId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"operator\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fromCity\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"toCity\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"depTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"arrTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"durationMin\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"baseFare\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"seats\",\"kind\":\"object\",\"type\":\"Seat\",\"relationName\":\"BusToSeat\"},{\"name\":\"bookings\",\"kind\":\"object\",\"type\":\"Booking\",\"relationName\":\"BookingToBus\"}],\"dbName\":null},\"Seat\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"seatCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"row\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"col\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"available\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"busId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"bus\",\"kind\":\"object\",\"type\":\"Bus\",\"relationName\":\"BusToSeat\"}],\"dbName\":null},\"Booking\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"pnr\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"busId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"seats\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"totalAmount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"BookingToUser\"},{\"name\":\"bus\",\"kind\":\"object\",\"type\":\"Bus\",\"relationName\":\"BookingToBus\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"bookings\",\"kind\":\"object\",\"type\":\"Booking\",\"relationName\":\"BookingToUser\"}],\"dbName\":null},\"Otp\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"used\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Booking\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"pnr\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"busId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"providerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"BookingStatus\"},{\"name\":\"lockRef\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"seats\",\"kind\":\"object\",\"type\":\"BookingSeat\",\"relationName\":\"BookingToBookingSeat\"},{\"name\":\"payment\",\"kind\":\"object\",\"type\":\"Payment\",\"relationName\":\"BookingToPayment\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"BookingToUser\"}],\"dbName\":null},\"BookingSeat\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"seatNo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fare\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"bookingId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"booking\",\"kind\":\"object\",\"type\":\"Booking\",\"relationName\":\"BookingToBookingSeat\"}],\"dbName\":null},\"SeatLock\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"busId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"seatNo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lockRef\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Payment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"bookingId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"razorpayOrderId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"razorpayPaymentId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"razorpaySignature\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"booking\",\"kind\":\"object\",\"type\":\"Booking\",\"relationName\":\"BookingToPayment\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -185,24 +185,14 @@ export interface PrismaClient<
   get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
-   * `prisma.bus`: Exposes CRUD operations for the **Bus** model.
+   * `prisma.otp`: Exposes CRUD operations for the **Otp** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Buses
-    * const buses = await prisma.bus.findMany()
+    * // Fetch zero or more Otps
+    * const otps = await prisma.otp.findMany()
     * ```
     */
-  get bus(): Prisma.BusDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.seat`: Exposes CRUD operations for the **Seat** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Seats
-    * const seats = await prisma.seat.findMany()
-    * ```
-    */
-  get seat(): Prisma.SeatDelegate<ExtArgs, { omit: OmitOpts }>;
+  get otp(): Prisma.OtpDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
    * `prisma.booking`: Exposes CRUD operations for the **Booking** model.
@@ -213,6 +203,36 @@ export interface PrismaClient<
     * ```
     */
   get booking(): Prisma.BookingDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.bookingSeat`: Exposes CRUD operations for the **BookingSeat** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BookingSeats
+    * const bookingSeats = await prisma.bookingSeat.findMany()
+    * ```
+    */
+  get bookingSeat(): Prisma.BookingSeatDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.seatLock`: Exposes CRUD operations for the **SeatLock** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SeatLocks
+    * const seatLocks = await prisma.seatLock.findMany()
+    * ```
+    */
+  get seatLock(): Prisma.SeatLockDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.payment`: Exposes CRUD operations for the **Payment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Payments
+    * const payments = await prisma.payment.findMany()
+    * ```
+    */
+  get payment(): Prisma.PaymentDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {
