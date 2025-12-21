@@ -1,0 +1,19 @@
+{
+  "trips": [
+    {
+      "trip_id": "TRIP123",
+      "operator_name": "SRS Travels",
+      "bus_type": "AC Sleeper",
+
+      "dep_time": "22:30",
+      "arr_time": "06:00",
+      "duration": 450,
+
+      "fare": 1200,
+      "seats_available": 8,
+
+      "boarding_points": [],
+      "dropping_points": []
+    }
+  ]
+}

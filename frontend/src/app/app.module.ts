@@ -8,20 +8,35 @@ import { LayoutModule } from './layout/layout.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { HeaderComponent } from './layout/header/header.component';
 import { HomeComponent } from './pages/home/home.component';
-import { SearchCardComponent } from './shared/search-card/search-card.component';
 import { RouterModule } from '@angular/router';
+import { AboutComponent } from './pages/static/about/about.component';
+import { CancellationComponent } from './pages/static/cancellation/cancellation.component';
+import { ContactComponent } from './pages/static/contact/contact.component';
+import { PrivacyComponent } from './pages/static/privacy/privacy.component';
+import { TermsComponent } from './pages/static/terms/terms.component';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { ResultComponent } from './pages/results/result.component';
 
 @NgModule({
   declarations: [AppComponent,
     HomeComponent,
-    SearchCardComponent
+    AboutComponent,
+    ContactComponent,
+    PrivacyComponent,
+    TermsComponent,
+    CancellationComponent,
+    ResultComponent
+
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     FormsModule,
     RouterModule,
     AppRoutingModule,
     LayoutModule,
+    HttpClientModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable

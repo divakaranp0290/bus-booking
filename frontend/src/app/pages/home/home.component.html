@@ -4,13 +4,22 @@
     <h1 class="hero-title d-md-block">
         Bus Ticket Booking
     </h1>
-    <img src="assets/illustrations/premium_bus.svg" class="bus road-line" alt="Bus illustration" />
-    <div class="flight-wrap">
-        <img src="assets/illustrations/premium_air.svg" class="flight" alt="Flight illustration" />
-    </div>
-    
-    <div class="motion-layer">
 
+    <img
+        src="assets/illustrations/premium_bus.svg"
+        class="bus road-line"
+        alt="Bus illustration"
+    />
+
+    <div class="flight-wrap">
+        <img
+            src="assets/illustrations/premium_air.svg"
+            class="flight"
+            alt="Flight illustration"
+        />
+    </div>
+
+    <div class="motion-layer">
         <span class="line l1"></span>
         <span class="line l2"></span>
         <span class="line l3"></span>
@@ -18,61 +27,139 @@
 </div>
 
 <div class="container">
-
     <div class="search-card-wrapper">
-
         <div class="search-card floating-card">
+
             <div class="search-grid">
-                <div class="field">
+
+                <!-- ================= FROM ================= -->
+                <div class="field position-relative">
                     <label>From</label>
+
                     <div class="input-wrapper">
                         <span class="start-icon">
                             <img src="assets/icons/start_icon.svg" alt="from" />
                         </span>
 
-                        <input type="text" [(ngModel)]="from" placeholder="Enter Source" />
+                        <input
+                            type="text"
+                            placeholder="Enter Source"
+                            [(ngModel)]="fromText"
+                            (focus)="onFromFocus()"
+                            (ngModelChange)="onFromInput($event)"
+                        />
+
+                        <!-- CLEAR ICON (ONLY ON FOCUS) -->
+                        <span
+                            class="clear-icon thick"
+                            *ngIf="fromFocused"
+                            (click)="clearFrom()"
+                        >
+                            ✕
+                        </span>
                     </div>
 
+                    <!-- DROPDOWN (ONLY WHEN TYPING) -->
+                    <div
+                        class="city-dropdown"
+                        *ngIf="showFromDropdown && filteredFrom.length"
+                    >
+                        <div
+                            class="city-item"
+                            *ngFor="let city of filteredFrom"
+                            (click)="selectFrom(city)"
+                        >
+                            {{ city.name }}, {{ city.state }}
+                        </div>
+                    </div>
                 </div>
 
-                <div class="field">
+                <!-- ================= TO ================= -->
+                <div class="field position-relative">
                     <label>To</label>
+
                     <div class="input-wrapper">
                         <span class="start-icon">
                             <img src="assets/icons/end_icon.svg" alt="to" />
                         </span>
 
-                        <input type="text" [(ngModel)]="to" placeholder="Enter Destination" />
+                        <input
+                            type="text"
+                            placeholder="Enter Destination"
+                            [(ngModel)]="toText"
+                            (focus)="onToFocus()"
+                            (ngModelChange)="onToInput($event)"
+                        />
+
+                        <!-- CLEAR ICON (ONLY ON FOCUS) -->
+                        <span
+                            class="clear-icon thick"
+                            *ngIf="toFocused"
+                            (click)="clearTo()"
+                        >
+                            ✕
+                        </span>
+                    </div>
+
+                    <!-- DROPDOWN (ONLY WHEN TYPING) -->
+                    <div
+                        class="city-dropdown"
+                        *ngIf="showToDropdown && filteredTo.length"
+                    >
+                        <div
+                            class="city-item"
+                            *ngFor="let city of filteredTo"
+                            (click)="selectTo(city)"
+                        >
+                            {{ city.name }}, {{ city.state }}
+                        </div>
                     </div>
                 </div>
 
-
+                <!-- ================= DATE ================= -->
                 <div class="date-field field">
                     <label>Date</label>
 
                     <div class="date-input-wrapper">
-                        <input #dateInput type="text" class="date-input" readonly />
+                        <input #dateInput
+                            type="text"
+                            class="date-input"
+                            readonly
+                            [value]="journeyDate | date:'d MMM y'"
+                        />
 
                         <div class="inline-pills">
-                            <span class="pill" [class.active]="selectedDate === 'today'" (click)="selectToday()">
+                            <span
+                                class="pill"
+                                [class.active]="selectedDate === 'today'"
+                                (click)="selectToday()"
+                            >
                                 Today
                             </span>
 
-                            <span class="pill" [class.active]="selectedDate === 'tomorrow'" (click)="selectTomorrow()">
+                            <span
+                                class="pill"
+                                [class.active]="selectedDate === 'tomorrow'"
+                                (click)="selectTomorrow()"
+                            >
                                 Tomorrow
                             </span>
                         </div>
                     </div>
                 </div>
+
             </div>
-            <!-- FLOATING CTA -->
-            <button class="search-btn floating" (click)="search()">
+
+            <!-- ================= SEARCH CTA ================= -->
+            <button
+                class="search-btn floating"
+                (click)="search()"
+            >
                 Search Buses
             </button>
+
         </div>
-
-
-
     </div>
-
 </div>
+
+<app-footer></app-footer>

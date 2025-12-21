@@ -1,0 +1,6 @@
+[
+  { "id": "CHN", "name": "Chennai", "state": "Tamil Nadu", "popular": true },
+  { "id": "BLR", "name": "Bangalore", "state": "Karnataka", "popular": true },
+  { "id": "HYD", "name": "Hyderabad", "state": "Telangana", "popular": true },
+  { "id": "MDU", "name": "Madurai", "state": "Tamil Nadu", "popular": false }
+]

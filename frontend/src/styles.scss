@@ -1,22 +1,30 @@
 @import "flatpickr/dist/flatpickr.min.css";
+@import "./styles/static_styles.scss";
+
+
 
 :root {
-  --primary: #1a2b6d;
-  --primary-dark: #0f1d4d;
-  --bg: #f6f7fb;
-  --text: #1f2937;
+  /* Brand */
+  --primary: #ff6d38;
+
+  /* Text */
+  --text-dark: #111827;
+  --text-muted: #6b7280;
+
+  /* UI */
+  --border: #e5e7eb;
+  --bg: #f9fafb;
+  --white: #ffffff;
 }
 
-* {
-  box-sizing: border-box;
-}
-
+/* Optional global reset */
 body {
   margin: 0;
-  font-family: Inter, Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
-  color: var(--text);
+  color: var(--text-dark);
 }
+
 
 button {
   background: var(--primary);
@@ -53,4 +61,21 @@ input {
   padding: 2px !important;
 }
 
+.btn-primary{
+  background: linear-gradient(45deg, #ff8a00, #ffb347) !important;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #ff8a00, #ffb347) !important;
+}
+
+input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  margin-bottom: 0px;
+}
 

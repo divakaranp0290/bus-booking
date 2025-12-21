@@ -1,0 +1,130 @@
+<!-- STICKY SEARCH BAR -->
+<div class="top-search-bar">
+
+  <div class="search-item">
+    <label>FROM</label>
+    <div class="search-box">{{ from }}</div>
+  </div>
+
+  <div class="swap-icon">
+    ⇄
+  </div>
+
+  <div class="search-item">
+    <label>TO</label>
+    <div class="search-box">{{ to }}</div>
+  </div>
+
+  <div class="search-item date">
+    <label>DEPARTURE DATE</label>
+    <div class="search-box">{{ date }}</div>
+  </div>
+
+  <button class="update-search-btn">
+    UPDATE SEARCH
+  </button>
+
+</div>
+
+
+<div class="results-page">
+
+  <!-- FILTER SIDEBAR -->
+  <aside class="filters">
+
+    <!-- BUS TYPE -->
+    <div class="filter-card">
+      <h4>Bus Type</h4>
+      <div class="pill-group">
+        <button (click)="toggleBusType('AC')">AC</button>
+        <button (click)="toggleBusType('Non-AC')">Non-AC</button>
+        <button (click)="toggleBusType('Seater')">Seater</button>
+        <button (click)="toggleBusType('Sleeper')">Sleeper</button>
+      </div>
+    </div>
+
+    <!-- DEPARTURE -->
+    <div class="filter-card">
+      <h4>Departure Time</h4>
+      <div class="pill-group">
+        <button (click)="toggleDeparture('12am-6am')">12am–6am</button>
+        <button (click)="toggleDeparture('6am-12pm')">6am–12pm</button>
+        <button (click)="toggleDeparture('12pm-6pm')">12pm–6pm</button>
+        <button (click)="toggleDeparture('6pm-12am')">6pm–12am</button>
+      </div>
+    </div>
+
+    <!-- ARRIVAL -->
+    <div class="filter-card">
+      <h4>Arrival Time</h4>
+      <div class="pill-group">
+        <button (click)="toggleArrival('12am-6am')">12am–6am</button>
+        <button (click)="toggleArrival('6am-12pm')">6am–12pm</button>
+        <button (click)="toggleArrival('12pm-6pm')">12pm–6pm</button>
+        <button (click)="toggleArrival('6pm-12am')">6pm–12am</button>
+      </div>
+    </div>
+
+    <!-- BOARDING -->
+    <div class="filter-card">
+      <h4>Boarding Point</h4>
+      <label *ngFor="let bp of availableBoardingPoints">
+        <input type="checkbox" (change)="toggleBoarding(bp)" />
+        {{ bp }}
+      </label>
+    </div>
+
+    <!-- DROPPING -->
+    <div class="filter-card">
+      <h4>Dropping Point</h4>
+      <label *ngFor="let dp of availableDroppingPoints">
+        <input type="checkbox" (change)="toggleDropping(dp)" />
+        {{ dp }}
+      </label>
+    </div>
+
+    <!-- OPERATOR -->
+    <div class="filter-card">
+      <h4>Operator</h4>
+      <label *ngFor="let op of availableOperators">
+        <input type="checkbox" (change)="toggleOperator(op)" />
+        {{ op }}
+      </label>
+    </div>
+
+  </aside>
+
+  <!-- RESULTS LIST -->
+  <section class="results">
+
+    <div *ngIf="loading" class="loader">
+      Fetching available buses…
+    </div>
+
+    <div *ngIf="!loading && filteredResults.length === 0" class="empty">
+      No buses match selected filters
+    </div>
+
+    <div *ngFor="let bus of filteredResults" class="bus-card">
+
+      <div class="bus-left">
+        <h3>{{ bus.operatorName }}</h3>
+        <span>{{ bus.busType }}</span>
+      </div>
+
+      <div class="bus-mid">
+        <div>{{ bus.departureTime }}</div>
+        <div class="duration">{{ bus.arrivalTime }}</div>
+      </div>
+
+      <div class="bus-right">
+        <div class="price">₹{{ bus.fare }}</div>
+        <div class="seats">{{ bus.seatsLeft }} seats left</div>
+        <button class="select-btn">Select Seats</button>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
