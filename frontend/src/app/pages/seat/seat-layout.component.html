@@ -1,0 +1,147 @@
+<div class="seat-panel" [class.seater-only]="isSeaterOnly">
+
+  <!-- ================= LEFT PANEL ================= -->
+  <div class="left-panel gb-bd-panel">
+
+    <!-- STEP HEADER -->
+    <div class="gb-step-header">
+      <span class="gb-step-badge">1</span>
+      <h5>Select boarding and dropping point</h5>
+    </div>
+
+    <div class="gb-bd-columns">
+
+      <!-- BOARDING -->
+      <div class="gb-bd-column">
+        <h4>Boarding Point</h4>
+
+        <div class="gb-bd-list">
+          <label class="gb-bd-item" *ngFor="let bp of boardingPoints" [class.active]="selectedBoarding?.id === bp.id">
+            <input type="radio" name="boarding" [checked]="selectedBoarding?.id === bp.id"
+              (change)="selectBoarding(bp)" />
+            <span class="gb-radio"></span>
+
+            <div class="gb-bd-info">
+              <div class="gb-time">{{ bp.time }}</div>
+              <div class="gb-place">{{ bp.name }}</div>
+              <div class="gb-desc">{{ bp.desc }}</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- DROPPING -->
+      <div class="gb-bd-column">
+        <h4>Dropping Point</h4>
+
+        <div class="gb-bd-list">
+          <label class="gb-bd-item" *ngFor="let dp of droppingPoints" [class.active]="selectedDropping?.id === dp.id">
+            <input type="radio" name="dropping" [checked]="selectedDropping?.id === dp.id"
+              (change)="selectDropping(dp)" />
+            <span class="gb-radio"></span>
+
+            <div class="gb-bd-info">
+              <div class="gb-time">{{ dp.time }}</div>
+              <div class="gb-place">{{ dp.name }}</div>
+              <div class="gb-desc">{{ dp.desc }}</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= RIGHT PANEL ================= -->
+  <div class="gb-seat-wrapper">
+
+    <!-- STEP HEADER -->
+    <div class="gb-step-header">
+      <span class="gb-step-badge">2</span>
+      <h5>Select your seat</h5>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="gb-legend">
+      <span><i class="lg available"></i> Available</span>
+      <span><i class="lg booked"></i> Booked</span>
+      <span><i class="lg ladies"></i> Ladies</span>
+      <span><i class="lg men"></i> Men</span>
+    </div>
+
+    <!-- ================= UPPER DECK ================= -->
+    <div class="gb-deck" *ngIf="upperRows.length">
+
+      <div class="deck-strip">UPPER</div>
+
+      <div class="bus-body">
+        <div class="seat-grid">
+
+          <div class="seat-row" *ngFor="let row of upperRows ; let i = index" [class.row-gap]="i >= 2">
+            <div class="seat" [style.gridColumn]="seat.column" *ngFor="let seat of row" [ngClass]="{
+                sleeper: seat.type === 'SLEEPER',
+                seater: seat.type === 'SEATER',
+                booked: isSeatDisabled(seat),
+                selected: isSeatSelected(seat),
+                ladies: seat.gender === 'LADIES'
+              }" (click)="toggleSeat(seat)">
+              <span class="seat-icon"></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= LOWER DECK ================= -->
+    <div class="gb-deck" *ngIf="lowerRows.length">
+      <div class="deck-strip lower">
+        <span class="deck-text">LOWER</span>
+  <svg
+    class="steering-svg"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <!-- outer wheel -->
+    <circle cx="12" cy="12" r="9" />
+
+    <!-- inner hub -->
+    <circle cx="12" cy="12" r="2.2" />
+
+    <!-- spokes -->
+    <path d="M12 3.5v4.5" />
+    <path d="M3.8 12h4.4" />
+    <path d="M15.8 12h4.4" />
+  </svg>
+
+  
+</div>
+
+
+
+      <div class="bus-body">
+        <div class="seat-grid">
+
+          <div class="seat-row" *ngFor="let row of lowerRows ; let i = index" [class.row-gap]="i >= 2">
+            <div class="seat" [style.gridColumn]="seat.column" *ngFor="let seat of row" [ngClass]="{
+                sleeper: seat.type === 'SLEEPER',
+                seater: seat.type === 'SEATER',
+                booked: isSeatDisabled(seat),
+                selected: isSeatSelected(seat),
+                ladies: seat.gender === 'LADIES'
+              }" (click)="toggleSeat(seat)">
+              <span class="seat-icon"></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta" [class.enabled]="selectedSeats.length > 0">
+      {{ selectedSeats.length > 0 ? 'CONTINUE' : 'SELECT SEATS TO PROCEED' }}
+    </div>
+
+  </div>
+</div>

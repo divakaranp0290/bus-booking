@@ -1,26 +1,44 @@
 <!-- STICKY SEARCH BAR -->
-<div class="top-search-bar">
+<div class="viaa-search-bar">
 
-  <div class="search-item">
+  <!-- FROM -->
+  <div class="viaa-field">
     <label>FROM</label>
-    <div class="search-box">{{ from }}</div>
+    <div class="viaa-input-wrapper">
+      <input class="viaa-input" [(ngModel)]="from" placeholder="From city" />
+      <span *ngIf="from" class="clear-icon material-icons" (click)="from=''">
+        close
+      </span>
+    </div>
   </div>
 
-  <div class="swap-icon">
-    ⇄
-  </div>
+  <!-- SWAP -->
+  <button class="viaa-swap" (click)="swapCities()">
+    <span class="material-icons">swap_horiz</span>
+  </button>
 
-  <div class="search-item">
+  <!-- TO -->
+  <div class="viaa-field">
     <label>TO</label>
-    <div class="search-box">{{ to }}</div>
+    <div class="viaa-input-wrapper">
+      <input class="viaa-input" [(ngModel)]="to" placeholder="To city" />
+      <span *ngIf="to" class="clear-icon material-icons" (click)="to=''">
+        close
+      </span>
+    </div>
   </div>
 
-  <div class="search-item date">
+  <!-- DATE -->
+  <div class="viaa-field">
     <label>DEPARTURE DATE</label>
-    <div class="search-box">{{ date }}</div>
+    <div class="viaa-input-wrapper">
+      <input type="date" class="viaa-input" [(ngModel)]="date" />
+
+    </div>
   </div>
 
-  <button class="update-search-btn">
+  <!-- CTA -->
+  <button class="viaa-cta" (click)="updateSearch()">
     UPDATE SEARCH
   </button>
 
@@ -29,65 +47,143 @@
 
 <div class="results-page">
 
-  <!-- FILTER SIDEBAR -->
   <aside class="filters">
+
+    <!-- FILTERS TITLE -->
+    <div class="filters-title">
+      <span class="material-icons">tune</span>
+      <span>Filters</span>
+    </div>
 
     <!-- BUS TYPE -->
     <div class="filter-card">
-      <h4>Bus Type</h4>
+      <h4>
+        <i class="bi bi-bus-front"></i>
+        Bus Type
+      </h4>
+
       <div class="pill-group">
-        <button (click)="toggleBusType('AC')">AC</button>
-        <button (click)="toggleBusType('Non-AC')">Non-AC</button>
-        <button (click)="toggleBusType('Seater')">Seater</button>
-        <button (click)="toggleBusType('Sleeper')">Sleeper</button>
+        <button (click)="toggleBusType('AC')" [ngClass]="{ active: selectedBusTypes.includes('AC') }">
+          <span class="material-icons">ac_unit</span>
+          <span>AC</span>
+        </button>
+
+        <button (click)="toggleBusType('Non-AC')" [ngClass]="{ active: selectedBusTypes.includes('Non-AC') }">
+          <span class="material-icons">air</span>
+          <span>Non-AC</span>
+        </button>
+
+        <button (click)="toggleBusType('Seater')" [ngClass]="{ active: selectedBusTypes.includes('Seater') }">
+          <i class="bi bi-person"></i>
+          <span>Seater</span>
+        </button>
+
+        <button (click)="toggleBusType('Sleeper')" [ngClass]="{ active: selectedBusTypes.includes('Sleeper') }">
+          <i class="bi bi-moon"></i>
+          <span>Sleeper</span>
+        </button>
       </div>
     </div>
 
-    <!-- DEPARTURE -->
+    <!-- DEPARTURE TIME -->
     <div class="filter-card">
-      <h4>Departure Time</h4>
+      <h4>
+        <i class="bi bi-clock"></i>
+        Departure Time
+      </h4>
+
       <div class="pill-group">
-        <button (click)="toggleDeparture('12am-6am')">12am–6am</button>
-        <button (click)="toggleDeparture('6am-12pm')">6am–12pm</button>
-        <button (click)="toggleDeparture('12pm-6pm')">12pm–6pm</button>
-        <button (click)="toggleDeparture('6pm-12am')">6pm–12am</button>
+        <button (click)="toggleDeparture('12am-6am')"
+          [ngClass]="{ active: selectedDepartureTimes.includes('12am-6am') }">
+          <span class="material-icons">nightlight</span>
+          <span>12AM–6AM</span>
+        </button>
+
+        <button (click)="toggleDeparture('6am-12pm')"
+          [ngClass]="{ active: selectedDepartureTimes.includes('6am-12pm') }">
+          <span class="material-icons">wb_sunny</span>
+          <span>6AM–12PM</span>
+        </button>
+
+        <button (click)="toggleDeparture('12pm-6pm')"
+          [ngClass]="{ active: selectedDepartureTimes.includes('12pm-6pm') }">
+          <span class="material-icons">light_mode</span>
+          <span>12PM–6PM</span>
+        </button>
+
+        <button (click)="toggleDeparture('6pm-12am')"
+          [ngClass]="{ active: selectedDepartureTimes.includes('6pm-12am') }">
+          <span class="material-icons">nights_stay</span>
+          <span>6PM–12AM</span>
+        </button>
       </div>
     </div>
 
-    <!-- ARRIVAL -->
+    <!-- ARRIVAL TIME -->
     <div class="filter-card">
-      <h4>Arrival Time</h4>
+      <h4>
+        <i class="bi bi-clock"></i>
+        Arrival Time
+      </h4>
+
       <div class="pill-group">
-        <button (click)="toggleArrival('12am-6am')">12am–6am</button>
-        <button (click)="toggleArrival('6am-12pm')">6am–12pm</button>
-        <button (click)="toggleArrival('12pm-6pm')">12pm–6pm</button>
-        <button (click)="toggleArrival('6pm-12am')">6pm–12am</button>
+        <button (click)="toggleArrival('12am-6am')" [ngClass]="{ active: selectedArrivalTimes.includes('12am-6am') }">
+          <span class="material-icons">nightlight</span>
+          <span>12AM–6AM</span>
+        </button>
+
+        <button (click)="toggleArrival('6am-12pm')" [ngClass]="{ active: selectedArrivalTimes.includes('6am-12pm') }">
+          <span class="material-icons">wb_sunny</span>
+          <span>6AM–12PM</span>
+        </button>
+
+        <button (click)="toggleArrival('12pm-6pm')" [ngClass]="{ active: selectedArrivalTimes.includes('12pm-6pm') }">
+          <span class="material-icons">light_mode</span>
+          <span>12PM–6PM</span>
+        </button>
+
+        <button (click)="toggleArrival('6pm-12am')" [ngClass]="{ active: selectedArrivalTimes.includes('6pm-12am') }">
+          <span class="material-icons">nights_stay</span>
+          <span>6PM–12AM</span>
+        </button>
       </div>
     </div>
 
-    <!-- BOARDING -->
+    <!-- BOARDING POINT -->
     <div class="filter-card">
-      <h4>Boarding Point</h4>
+      <h4>
+        <i class="bi bi-geo-alt"></i>
+        Boarding Point
+      </h4>
+
       <label *ngFor="let bp of availableBoardingPoints">
-        <input type="checkbox" (change)="toggleBoarding(bp)" />
+        <input type="checkbox" [checked]="selectedBoardingPoints.includes(bp)" (change)="toggleBoarding(bp)" />
         {{ bp }}
       </label>
     </div>
 
-    <!-- DROPPING -->
+    <!-- DROPPING POINT -->
     <div class="filter-card">
-      <h4>Dropping Point</h4>
+      <h4>
+        <i class="bi bi-geo"></i>
+        Dropping Point
+      </h4>
+
       <label *ngFor="let dp of availableDroppingPoints">
-        <input type="checkbox" (change)="toggleDropping(dp)" />
+        <input type="checkbox" [checked]="selectedDroppingPoints.includes(dp)" (change)="toggleDropping(dp)" />
         {{ dp }}
       </label>
     </div>
 
     <!-- OPERATOR -->
     <div class="filter-card">
-      <h4>Operator</h4>
+      <h4>
+        <i class="bi bi-building"></i>
+        Operator
+      </h4>
+
       <label *ngFor="let op of availableOperators">
-        <input type="checkbox" (change)="toggleOperator(op)" />
+        <input type="checkbox" [checked]="selectedOperators.includes(op)" (change)="toggleOperator(op)" />
         {{ op }}
       </label>
     </div>
@@ -97,34 +193,92 @@
   <!-- RESULTS LIST -->
   <section class="results">
 
+    <!-- SORT BAR -->
+    <div class="bus-card-viaa sort-bar" *ngIf="!loading && filteredResults.length">
+      <div class="results-count">
+        Showing <strong>{{ filteredResults.length }} buses</strong>
+      </div>
+
+      <div class="sort-options">
+        <span>Sort by:</span>
+        <button class="active">BEST ↓</button>
+        <button>RATING</button>
+        <button>DEPARTURE</button>
+        <button>ARRIVAL</button>
+        <button>FASTEST</button>
+        <button>CHEAPEST</button>
+      </div>
+    </div>
+
+    <!-- LOADER -->
     <div *ngIf="loading" class="loader">
       Fetching available buses…
     </div>
 
+    <!-- EMPTY -->
     <div *ngIf="!loading && filteredResults.length === 0" class="empty">
       No buses match selected filters
     </div>
 
-    <div *ngFor="let bus of filteredResults" class="bus-card">
+    <!-- BUS CARD -->
+    <div *ngFor="let bus of filteredResults" class="bus-card-viaa">
 
-      <div class="bus-left">
-        <h3>{{ bus.operatorName }}</h3>
-        <span>{{ bus.busType }}</span>
+      <!-- MAIN ROW -->
+      <div class="bus-main">
+
+        <!-- LEFT -->
+        <div class="bus-left">
+          <h3>{{ bus.operatorName }}</h3>
+          <p>{{ bus.busType }}</p>
+        </div>
+
+        <!-- TIME -->
+        <div class="bus-time">
+          <div class="time">
+            <strong>{{ bus.departureTime }}</strong>
+            <span>Departure</span>
+          </div>
+
+          <div class="duration">
+            <span>→</span>
+          </div>
+
+          <div class="time">
+            <strong>{{ bus.arrivalTime }}</strong>
+            <span>Arrival</span>
+          </div>
+        </div>
+
+        <!-- PRICE -->
+        <div class="bus-right">
+          <div class="price">₹{{ bus.fare }}</div>
+          <div class="seats">{{ bus.seatsLeft }} seats left</div>
+          <button class="select-btn" (click)="toggleSeats()">{{ showSeats ? 'HIDE SEAT' : 'SELECT SEATS'
+            }}</button>
+        </div>
       </div>
 
-      <div class="bus-mid">
-        <div>{{ bus.departureTime }}</div>
-        <div class="duration">{{ bus.arrivalTime }}</div>
+      <!-- EXPANDABLE SEAT LAYOUT -->
+      <div class="seat-expand" *ngIf="showSeats">
+        <app-seat-layout [seats]="seats">
+        </app-seat-layout>
       </div>
 
-      <div class="bus-right">
-        <div class="price">₹{{ bus.fare }}</div>
-        <div class="seats">{{ bus.seatsLeft }} seats left</div>
-        <button class="select-btn">Select Seats</button>
+      <!-- FOOTER -->
+      <div class="bus-footer">
+        <span class="tracking">
+          <i class="bi bi-geo-alt"></i> Live Tracking
+        </span>
+
+        <div class="links">
+          <a>Boarding & Dropping Points</a>
+          <a>Amenities, Policies & Bus Details</a>
+        </div>
       </div>
 
     </div>
 
   </section>
+
 
 </div>

@@ -5,136 +5,129 @@
 }
 
 /* STICKY SEARCH BAR */
-
-/* ================================
-   GOIBIBO STYLE TOP SEARCH BAR
-   ================================ */
-
-.top-search-bar {
+.viaa-search-bar {
   display: flex;
-  align-items: flex-end;
-  gap: 14px;
-  padding: 14px 20px;
-  background: var(--primary);
-  position: sticky;
-  top: 0;
-  z-index: 30;
+  align-items: center;
+  gap: 15px;
+
+  padding: 14px 16px;
+  width: 100%;
+  transform: translateY(0px);
+  background: linear-gradient(180deg, #ff7a18 10%, #ffb347 50%);
 }
 
-.search-item {
+/* Field container */
+.viaa-field {
   display: flex;
   flex-direction: column;
   gap: 4px;
+
   flex: 1;
+  min-width: 160px;
+
+  transform: translateY(0px); /* 🔑 aligns with buttons */
 }
 
-.search-item.date {
-  flex: 0.8;
-}
-
-.search-item label {
+/* Labels aligned */
+.viaa-field label {
+  height: 14px;
   font-size: 11px;
   font-weight: 600;
-  color: var(--white);
   letter-spacing: 0.5px;
+  color: #fff;
 }
 
-.search-box {
-  background: var(--white);
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 15px;
+/* Input wrapper (for clear icon) */
+.viaa-input-wrapper {
+  position: relative;
+}
+
+/* Input styling (uniform) */
+.viaa-input {
+  height: 44px;
+  width: 100%;
+  padding: 0 36px 0 14px;
+
+  background: #fff;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+
+  font-size: 14px;
   font-weight: 600;
-  color: var(--text-dark);
-  min-height: 40px;
-  display: flex;
-  align-items: center;
+  color: #111;
+
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-/* Swap Icon */
-.swap-icon {
-  background: var(--white);
-  color: var(--primary);
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
+/* Focus state */
+.viaa-input:focus {
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.8);
+}
+
+/* Clear (close) icon */
+.clear-icon {
+  position: absolute;
+  right: 10px;
+  top: 40%;
+  transform: translateY(-50%);
+
+  font-size: 18px;
+  color: #999;
+  cursor: pointer;
+}
+
+.clear-icon:hover {
+  color: #333;
+}
+
+/* Swap button */
+.viaa-swap {
+  flex: 0 0 44px;
+  height: 44px;
+  width: 44px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: bold;
+
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  transform: translateY(3px);
   cursor: pointer;
-  margin-bottom: 6px;
 }
 
-/* Update Search Button */
-.update-search-btn {
-  background: var(--white);
-  color: #2563eb;
+.viaa-swap .material-icons {
+  font-size: 22px;
+}
+
+/* CTA button */
+.viaa-cta {
+  flex: 0 0 auto;
+  height: 44px;
+  padding: 0 20px;
+
   border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
+  border-radius: 8px;
+
+  background: #fff;
+  color: #ff6a2b;
+
   font-weight: 700;
   font-size: 14px;
-  cursor: pointer;
-  height: 42px;
   white-space: nowrap;
-}
-
-.update-search-btn:hover {
-  background: #f1f5f9;
-}
-
-
-
-.search-bar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Search fields */
-.search-fields {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  font-weight: 600;
-  color: var(--text-dark);
-}
-
-.field {
-  background: #fff7f3;
-  border: 1px solid #ffd5c6;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-}
-
-.swap {
-  color: var(--primary);
-  font-weight: 700;
-}
-
-/* Update button */
-.update-btn {
-  background: var(--primary);
-  color: var(--white);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
+  transform: translateY(3px);
   cursor: pointer;
 }
 
-.update-btn:hover {
-  opacity: 0.9;
+.viaa-cta:hover {
+  background: #ffe8dc;
 }
 
 
@@ -154,6 +147,18 @@
   border: 1px solid #e5e7eb;
 }
 
+.filters-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ff6a2b;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eaeaea;
+}
+
 .filter-card {
   margin-bottom: 18px;
 }
@@ -163,30 +168,6 @@
   margin-bottom: 8px;
   color: #111827;
 }
-
-.pill-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.pill-group button {
-  padding: 6px 12px;
-  font-size: 12px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--white);
-  color: var(--text-dark);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pill-group button:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: #fff7f3;
-}
-
 
 /* FILTER SIDEBAR */
 .filters {
@@ -230,80 +211,6 @@
 }
 
 
-/* RESULTS */
-.results {
-  display: flex;
-  flex-direction: column;
-}
-
-.bus-card {
-  background: var(--white);
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  padding: 16px;
-  margin-bottom: 14px;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  align-items: center;
-}
-
-.bus-left h3 {
-  margin: 0;
-  font-size: 15px;
-  color: var(--text-dark);
-}
-
-.bus-left span {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-
-.bus-mid {
-  text-align: center;
-  font-weight: 600;
-}
-
-.duration {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.bus-right {
-  text-align: right;
-}
-
-.price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.seats {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.select-btn {
-  margin-top: 8px;
-  background: #ff6d38;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* STATES */
-.loader,
-.empty {
-  padding: 24px;
-  background: #fff;
-  border-radius: 8px;
-  text-align: center;
-  color: #6b7280;
-}
-
 @media (max-width: 900px) {
   .top-search-bar {
     flex-wrap: wrap;
@@ -318,4 +225,217 @@
     width: 100%;
   }
 }
+
+
+// Pill Group
+.pill-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 🔑 equal width pills */
+  gap: 10px;
+}
+
+/* Pills */
+.pill-group button {
+  height: 72px;              /* 🔑 same height */
+  width: 100%;               /* 🔑 same width */
+
+  display: flex;
+  flex-direction: column;    /* icon ↑ text ↓ */
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Icons */
+.pill-group button i,
+.pill-group button .material-icons {
+  font-size: 20px;
+  color: #ff6a2b;
+}
+
+/* Hover */
+.pill-group button:hover {
+  border-color: #ff6a2b;
+  color: #ff6a2b;
+}
+
+/* Optional: active state (if you add later) */
+.pill-group button.active {
+  background: rgba(255,106,43,0.08);
+  border-color: #ff6a2b;
+}
+
+
+// Sort Design
+.sort-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 16px 20px;
+  background: #f4f8ff;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.results-count {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sort-options {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.sort-options span {
+  font-weight: 600;
+}
+
+.sort-options button {
+  font-size: 14px;
+  color: black;
+  background: none;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sort-options button.active {
+  color: #ff6a2b;
+}
+
+.bus-card-viaa {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.bus-main {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  align-items: center;
+}
+
+.bus-left h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.bus-left p {
+  margin-top: 6px;
+  color: #666;
+}
+
+.bus-time {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.time strong {
+  font-size: 22px;
+}
+
+.time span {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.duration {
+  font-size: 20px;
+  color: #aaa;
+}
+
+.bus-right {
+  text-align: right;
+}
+
+.price {
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.seats {
+  color: #ff6a2b;
+  font-weight: 600;
+  margin: 6px 0 12px;
+}
+
+.select-btn {
+  color: #ff6a2b;
+  color: #fff;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bus-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  padding: 14px 20px;
+  border-top: 1px solid #eee;
+}
+
+.tracking {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.links {
+  font-size: 14px;
+  display: flex;
+  gap: 24px;
+}
+
+.links a {
+  color: #ff6a2b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+
+
+.select-btn {
+  background: #ff6f3d;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: none;
+}
+
+.seat-expand {
+  border-top: 1px solid #eee;
+  padding: 16px;
+}
+
+
+
+
 

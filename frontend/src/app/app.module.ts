@@ -17,6 +17,7 @@ import { TermsComponent } from './pages/static/terms/terms.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ResultComponent } from './pages/results/result.component';
+import { SeatLayoutComponent } from './pages/seat/seat-layout.component';
 
 @NgModule({
   declarations: [AppComponent,
@@ -26,7 +27,8 @@ import { ResultComponent } from './pages/results/result.component';
     PrivacyComponent,
     TermsComponent,
     CancellationComponent,
-    ResultComponent
+    ResultComponent,
+    SeatLayoutComponent
 
   ],
   imports: [
